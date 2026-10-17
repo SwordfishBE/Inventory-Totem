@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "inventory_totem",
+  "version": "${version}",
+  "name": "Inventory Totem",
+  "description": "Totems of undying protect players from anywhere in their inventory. No Collective required.",
+  "authors": ["SwordfishBE"],
+  "contact": {
+    "homepage": "https://github.com/SwordfishBE/Inventory-Totem",
+    "sources": "https://github.com/SwordfishBE/Inventory-Totem",
+    "email": "swordfishbe@locutus.net"
+  },
+  "license": "AGPL-3.0",
+  "icon": "assets/inventory_totem/icon.png",
+  "environment": "*",
+  "entrypoints": { "main": ["net.inventory_totem.InventoryTotem"] },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": ">=0.163.0+26.3"
+  },
+  "breaks": { "inventorytotem": "*" }
+}

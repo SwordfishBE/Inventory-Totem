@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "inventory_totem-test",
+  "version": "1.0.0",
+  "name": "Inventory Totem Tests",
+  "environment": "*",
+  "entrypoints": { "fabric-gametest": ["net.inventory_totem.InventoryTotemGameTests"] }
+}
