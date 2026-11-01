@@ -3,6 +3,8 @@ package net.inventory_totem;
 import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,8 +15,10 @@ import net.minecraft.world.item.Items;
 public final class InventoryProtection {
     private InventoryProtection() {}
 
-    public static boolean allowDeath(LivingEntity entity) {
+    public static boolean allowDeath(LivingEntity entity, DamageSource source) {
         if (!(entity instanceof ServerPlayer player)) return true;
+        // Match vanilla totems: /kill and the void must still be fatal.
+        if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return true;
         if (player.getMainHandItem().is(Items.TOTEM_OF_UNDYING)
                 || player.getOffhandItem().is(Items.TOTEM_OF_UNDYING)) return true;
 

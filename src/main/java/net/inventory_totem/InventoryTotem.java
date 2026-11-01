@@ -11,7 +11,7 @@ public final class InventoryTotem implements ModInitializer {
     @Override
     public void onInitialize() {
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, amount) ->
-                InventoryProtection.allowDeath(entity));
+                InventoryProtection.allowDeath(entity, source));
         String version = FabricLoader.getInstance().getModContainer(MOD_ID)
                 .orElseThrow().getMetadata().getVersion().getFriendlyString();
         LoggerFactory.getLogger(MOD_ID).info("[Inventory Totem] Mod initialized. Version: {}", version);

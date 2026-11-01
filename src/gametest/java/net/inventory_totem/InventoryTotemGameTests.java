@@ -38,6 +38,45 @@ public class InventoryTotemGameTests {
     }
 
     @GameTest
+    public void bypassDamageDoesNotActivateOrConsumeTotem(GameTestHelper h) {
+        for (boolean voidDamage : new boolean[] {false, true}) {
+            ServerPlayer p = player(h);
+            p.getInventory().setItem(15, new ItemStack(Items.TOTEM_OF_UNDYING));
+            p.addEffect(new MobEffectInstance(MobEffects.POISON, 500));
+            p.setHealth(0);
+            var source = voidDamage ? p.damageSources().fellOutOfWorld() : p.damageSources().genericKill();
+            h.assertTrue(ServerLivingEntityEvents.ALLOW_DEATH.invoker().allowDeath(p, source, 1000),
+                    "Vanilla bypass damage must allow death");
+            h.assertTrue(p.getHealth() == 0, "Bypass damage must not restore health");
+            h.assertTrue(p.getInventory().getItem(15).getCount() == 1, "Bypass damage must not consume a totem");
+            h.assertTrue(p.hasEffect(MobEffects.POISON), "Bypass damage must not clear effects");
+            h.assertFalse(p.hasEffect(MobEffects.REGENERATION), "Bypass damage must not grant totem effects");
+        }
+        h.succeed();
+    }
+
+    @GameTest
+    public void killCommandRemainsFatal(GameTestHelper h) {
+        ServerPlayer p = player(h);
+        p.getInventory().setItem(15, new ItemStack(Items.TOTEM_OF_UNDYING));
+        // KillCommand invokes this same vanilla method on each target.
+        p.kill(h.getLevel());
+        h.assertFalse(p.isAlive(), "/kill must remain fatal with an inventory totem");
+        h.assertFalse(p.hasEffect(MobEffects.REGENERATION), "/kill must not activate totem effects");
+        h.succeed();
+    }
+
+    @GameTest
+    public void voidDamageRemainsFatal(GameTestHelper h) {
+        ServerPlayer p = player(h);
+        p.getInventory().setItem(15, new ItemStack(Items.TOTEM_OF_UNDYING));
+        p.hurtServer(h.getLevel(), p.damageSources().fellOutOfWorld(), 1000);
+        h.assertFalse(p.isAlive(), "Falling out of the world must remain fatal with an inventory totem");
+        h.assertFalse(p.hasEffect(MobEffects.REGENERATION), "Void damage must not activate totem effects");
+        h.succeed();
+    }
+
+    @GameTest
     public void lethalDamageInvokesProtection(GameTestHelper h) {
         ServerPlayer p = player(h);
         p.getInventory().setItem(15, new ItemStack(Items.TOTEM_OF_UNDYING));
@@ -106,7 +145,7 @@ public class InventoryTotemGameTests {
     @GameTest
     public void mobsDoNotUseInventoryProtection(GameTestHelper h) {
         var mob = h.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
-        h.assertTrue(InventoryProtection.allowDeath(mob), "Only server players receive inventory protection");
+        h.assertTrue(InventoryProtection.allowDeath(mob, mob.damageSources().generic()), "Only server players receive inventory protection");
         h.succeed();
     }
 
